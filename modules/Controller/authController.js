@@ -5,6 +5,26 @@ const User = require("../Model/User");
 const userValidator = require("../Utils/UserValidator");
 const logInValidator = require("../Utils/logInValidator");
 const bcrypt = require("../Utils/bcrypt");
+const db = require("../Database/db");
+
+const show = async (req, res) => {
+  try {
+    const results = await new Promise((resolve, reject) => {
+      db.query('SELECT * FROM akun', (error, results) => {
+        if (error) {
+          console.error('Error querying the database: ' + error);
+          reject(error);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+    res.json(results);
+  } catch (error) {
+    console.error('Error querying the database: ' + error);
+    res.status(500).send('Database error');
+  }
+};
 
 const signUp = async (req, res) => {
   let response = null;
@@ -18,14 +38,6 @@ const signUp = async (req, res) => {
       res.status(httpStatus.BAD_REQUEST).json(response);
       return;
     }
-
-    const mail = await User.findOne({ email: request.email });
-    if (mail) {
-      response = new Response.Error(true, "Email already exist");
-      res.status(httpStatus.BAD_REQUEST).json(response);
-      return;
-    }
-
     const hashedPassword = await bcrypt.hash(request.password);
     request.password = hashedPassword;
 
@@ -73,4 +85,4 @@ const logIn = async (req, res) => {
   }
 };
 
-module.exports = { signUp, logIn };
+module.exports = { show, signUp, logIn };
