@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Season{
+  id Int @id @default(autoincrement())
+  nama_season String
+  tanggal_mulai DateTime @db.Date
+  tanggal_selesai DateTime @db.Date
+  tarif Tarif[]
+}
+
+model Tarif{
+  id Int @id @default(autoincrement())
+  jenis_tarif String
+  besaran_tarif Int
+  id_season Int
+  season Season @relation(fields: [id_season], references: [id])
+  kamars Kamar[]
+  
+}
+
+model FasilitasTambahan{
+  id Int @id @default(autoincrement())
+  nama_fasilitas String
+  harga Int
+  stock Int
+}
+
+model Kamar{
+  id Int @id @default(autoincrement())
+  no_kamar String
+  jenis_kamar String
+  kapasitas Int
+  jenis_bed String
+  luas_kamar String
+  fasilitas String
+  status_ketersediaan Boolean
+  id_tarif Int
+  tarif Tarif @relation(fields: [id_tarif], references: [id])
+}
+
+model Akun{
+  id Int @id @default(autoincrement())
+  username String
+  password String
+  id_role Int
+  role Role @relation(fields: [id_role], references: [id])
+  Customer Customer[]
+  Pegawai Pegawai[]
+}
+
+model Customer{
+  id Int @id @default(autoincrement())
+  nama String
+  no_identitas String
+  no_telp String
+  email String
+  alamat String
+  nama_istitusi String
+  id_akun Int
+  akun Akun @relation(fields: [id_akun], references: [id])
+}
+
+model Pegawai{
+  id Int @id @default(autoincrement())
+  nama_pegawai String
+  role String
+  id_akun Int
+  akun Akun @relation(fields: [id_akun], references: [id])
+}
+
+model Role{
+  id Int @id @default(autoincrement())
+  nama_role String
+  Akun Akun[]
+}
