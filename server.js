@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
     res.send("Response Success!!!")
 })
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000
 app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+    console.log("Server is up and listening on " + PORT)
 })
