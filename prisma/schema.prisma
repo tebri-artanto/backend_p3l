@@ -35,19 +35,6 @@ model FasilitasTambahan{
   stock Int
 }
 
-model Kamar{
-  id Int @id @default(autoincrement())
-  no_kamar String
-  jenis_kamar String
-  kapasitas Int
-  jenis_bed String
-  luas_kamar String
-  fasilitas String
-  status_ketersediaan Boolean
-  id_tarif Int
-  tarif Tarif @relation(fields: [id_tarif], references: [id])
-}
-
 model Akun{
   id Int @id @default(autoincrement())
   username String
@@ -82,4 +69,24 @@ model Role{
   id Int @id @default(autoincrement())
   nama_role String
   Akun Akun[]
+}
+
+model JenisKamar{
+  id Int @id @default(autoincrement())
+  jenis_kamar String
+  luas_kamar String
+  fasilitas String
+  Kamar Kamar[]
+}
+
+model Kamar{
+  id Int @id @default(autoincrement())
+  no_kamar String
+  kapasitas Int
+  jenis_bed String
+  status_ketersediaan Boolean
+  id_tarif Int
+  id_jenis_kamar Int
+  jenis_kamar JenisKamar @relation(fields: [id_jenis_kamar], references: [id])
+  tarif Tarif @relation(fields: [id_tarif], references: [id])
 }

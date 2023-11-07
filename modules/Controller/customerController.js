@@ -167,13 +167,12 @@ const createCustomer = async (req, res) => {
 
 
 const updateCustomer = async (req, res) => {
-    const { nama, no_identitas, no_telp, email, alamat, nama_institusi } =
-        req.body
-    const { error, value } = customerValidator.validate(req.body)
+    const { nama, no_identitas, no_telp, email, alamat } = req.body
+    // const { error, value } = customerValidator.validate(req.body)
 
-    if (error) {
-        return res.status(400).json({ msg: error.details[0].message })
-    }
+    // if (error) {
+    //     return res.status(400).json({ msg: error.details[0].message })
+    // }
     try {
         const customer = await prisma.customer.update({
             where: {
@@ -185,7 +184,6 @@ const updateCustomer = async (req, res) => {
                 no_telp,
                 email,
                 alamat,
-                nama_institusi
             }
         })
 
