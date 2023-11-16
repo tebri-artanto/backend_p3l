@@ -35,8 +35,12 @@ const getTarifById = async (req, res) => {
 };
 
 const createTarif = async (req, res) => {
-  const { jenis_tarif, besaran_tarif, id_season } = req.body;
+  const { besaran_tarif, id_season, id_kamar } = req.body;
   const { error, value } = tarifValidator.validate(req.body);
+  if (error) {
+    return res.status(400).json({ msg: error.details[0].message });
+  }
+
 
   const existingUser = await prisma.tarif.findFirst({
     where: {
@@ -49,16 +53,13 @@ if (existingUser) {
     return res.status(httpStatus.BAD_REQUEST).json(response)
 }
 
-  if (error) {
-    return res.status(400).json({ msg: error.details[0].message });
-  }
-
+  
   try {
     const tarif = await prisma.tarif.create({
       data: {
-        jenis_tarif,
         besaran_tarif: Number(besaran_tarif),
         id_season: Number(id_season),
+        id_kamar: Number(id_kamar),
       },
     });
 
@@ -71,7 +72,7 @@ if (existingUser) {
 };
 
 const updateTarif = async (req, res) => {
-  const { jenis_tarif, besaran_tarif, id_season } = req.body;
+  const { besaran_tarif, id_season, id_kamar } = req.body;
   const { error, value } = tarifValidator.validate(req.body);
 
   if (error) {
@@ -83,9 +84,9 @@ const updateTarif = async (req, res) => {
         id: Number(req.params.id),
       },
       data: {
-        jenis_tarif,
         besaran_tarif: Number(besaran_tarif),
         id_season: Number(id_season),
+        id_kamar: Number(id_kamar),
       },
     });
 
@@ -111,6 +112,109 @@ const deleteTarif = async (req, res) => {
     res.status(httpStatus.BAD_REQUEST).json(response);
   }
 };
+const getTarifBySeasonId = async (req, res) => {
+  try {
+    const tarif = await prisma.tarif.findMany({
+      where: {
+        id_season: Number(req.params.id_season),
+      },
+      include: {
+        kamar: {
+          where: {
+            status_ketersediaan: "Available",
+          },
+        },
+      },
+    });
+    const response = new Response.Success(false, "Data retrieved successfully", tarif);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+
+const getKamarBySeasonId = async (req, res) => {
+  try {
+    const kamar = await prisma.tarif.findMany({
+      where: {
+        id_season: Number(req.params.id_season),
+      },
+      select: {
+        id_kamar: true,
+      },
+    });
+    const response = new Response.Success(false, "Data retrieved successfully", kamar.map((k) => k.id_kamar));
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const getTarifAndKamarBySeasonId = async (req, res) => {
+  try {
+    const tarif = await prisma.tarif.findMany({
+      where: {
+        id_season: Number(req.params.id_season),
+      },
+      include: {
+        kamar: true,
+      },
+    });
+    const response = new Response.Success(false, "Data retrieved successfully", tarif);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+// const getTarifAndKamarBySeasonId = async (req, res) => {
+//   try {
+//     const tarif = await prisma.tarif.findMany({
+//       where: {
+//         id_season: Number(req.params.id_season),
+//       },
+//       include: {
+//         kamar: true,
+//       },
+//     });
+
+//     const filteredTarif = tarif.map((t) => {
+//       const filteredKamar = Array.isArray(t.kamar)
+//         ? t.kamar.filter((k) => k.status_ketersediaan === "Available")
+//         : [];
+
+//       return {
+//         ...t,
+//         kamar: filteredKamar,
+//       };
+//     });
+
+//     const response = new Response.Success(false, "Data retrieved successfully", filteredTarif);
+//     res.status(httpStatus.OK).json(response);
+//   } catch (error) {
+//     const response = new Response.Error(true, error.message);
+//     res.status(httpStatus.BAD_REQUEST).json(response);
+//   }
+// };
+
+const getTarifByKamarId = async (req, res) => {
+  try {
+    const tarif = await prisma.tarif.findFist({
+      where: {
+        id_season: Number(req.params.id_season),
+      },
+    });
+    const response = new Response.Success(false, "Data retrieved successfully", tarif);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
 
 module.exports = {
   createTarif,
@@ -118,4 +222,8 @@ module.exports = {
   getTarifById,
   deleteTarif,
   updateTarif,
+  getTarifBySeasonId,
+  getKamarBySeasonId,
+  getTarifByKamarId,
+  getTarifAndKamarBySeasonId,
 };

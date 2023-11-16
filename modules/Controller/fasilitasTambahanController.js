@@ -46,7 +46,7 @@ const createFasilitasTambahan = async (req, res) => {
 })
 
 if (existingUser) {
-    const response = new Response.Error(true, 'Username already exists')
+    const response = new Response.Error(true, 'Fasilitas already exists')
     return res.status(httpStatus.BAD_REQUEST).json(response)
 }
 
@@ -106,6 +106,21 @@ const deleteFasilitasTambahan = async (req, res) => {
       },
     });
     const response = new Response.Success(false, "Data deleted successfully", fasilitasTambahan);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
+const getTransaksiFasilitasByReservasiId = async (req, res) => {
+  try {
+    const tarif = await prisma.transaksiFasilitas.findMany({
+      where: {
+        id_season: Number(req.params.id_season),
+      },
+    });
+    const response = new Response.Success(false, "Data retrieved successfully", tarif);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
     const response = new Response.Error(true, error.message);

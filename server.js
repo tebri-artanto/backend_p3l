@@ -12,6 +12,11 @@ const fasilitasTambahanRoutes = require('./modules/Routes/fasilitasTambahanRoute
 const kamarRoutes = require('./modules/Routes/kamarRoutes');
 const authRoutes = require('./modules/Routes/authRoutes');
 const customerRoutes = require('./modules/Routes/customerRoutes');
+const perhitunganRoutes = require('./modules/Routes/perhitunganRoutes');
+const reservasiRoutes = require('./modules/Routes/reservasiRoutes');
+const transaksiFasilitas = require ('./modules/Routes/transaksiFasilitasRoutes');
+const transaksiKamarRoutes = require ('./modules/Routes/transaksiKamarRoutes');
+const pegawaiRoutes = require ('./modules/Routes/pegawaiRoutes');
 const app = express();
 
 // dotenv.config();
@@ -32,6 +37,11 @@ app.use('/fasilitasTambahans', fasilitasTambahanRoutes);
 app.use('/kamars', kamarRoutes);
 app.use('/auth', authRoutes);
 app.use('/customers', customerRoutes);
+app.use('/perhitungans', perhitunganRoutes);
+app.use('/reservasis', reservasiRoutes);
+app.use('/transaksiFasilitas', transaksiFasilitas);
+app.use('/transaksiKamars', transaksiKamarRoutes);
+app.use('/pegawais', pegawaiRoutes);
 
 // Start the server
 app.get("/", (req, res) => {

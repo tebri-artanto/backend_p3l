@@ -13,7 +13,6 @@ datasource db {
 model Season{
   id Int @id @default(autoincrement())
   nama_season String
-  jenis_season String
   tanggal_mulai DateTime @db.Date
   tanggal_selesai DateTime @db.Date
   tarif Tarif[]
@@ -21,12 +20,12 @@ model Season{
 
 model Tarif{
   id Int @id @default(autoincrement())
+  jenis_tarif String
   besaran_tarif Int
   id_season Int
-  id_kamar Int
-  kamar Kamar @relation(fields: [id_kamar], references: [id])
+  id_jenis_kamar Int
+  jenis_kamar JenisKamar @relation(fields: [id_jenis_kamar], references: [id])
   season Season @relation(fields: [id_season], references: [id])
-  TransaksiKamar  TransaksiKamar[]
 }
 
 model FasilitasTambahan{
@@ -34,7 +33,6 @@ model FasilitasTambahan{
   nama_fasilitas String
   harga Int
   stock Int
-  TransaksiFasilitas TransaksiFasilitas[]
 }
 
 model Akun{
@@ -54,18 +52,17 @@ model Customer{
   no_telp String
   email String
   alamat String
-  nama_institusi String
+  nama_istitusi String
   id_akun Int
   akun Akun @relation(fields: [id_akun], references: [id])
-  Reservasi Reservasi[]
 }
 
 model Pegawai{
   id Int @id @default(autoincrement())
   nama_pegawai String
+  role String
   id_akun Int
   akun Akun @relation(fields: [id_akun], references: [id])
-  Reservasi Reservasi[]
 }
 
 model Role{
@@ -74,54 +71,21 @@ model Role{
   Akun Akun[]
 }
 
+model JenisKamar{
+  id Int @id @default(autoincrement())
+  jenis_kamar String
+  luas_kamar String
+  fasilitas String
+  Kamar Kamar[]
+  Tarif Tarif[]
+}
 
 model Kamar{
   id Int @id @default(autoincrement())
   no_kamar String
   kapasitas Int
   jenis_bed String
-  jenis_kamar String
-  luas_kamar String
-  fasilitas String
   status_ketersediaan String
-  Tarif Tarif[]
-}
-
-model Reservasi{
-  id Int @id @default(autoincrement())
-  booking_id String
-  jumlah_anak Int
-  jumlah_dewasa Int
-  tanggal_checkin DateTime @db.Date
-  tanggal_checkout DateTime @db.Date
-  create_by String
-  create_date DateTime @db.Date
-  status_reservasi String
-  tanggal_pembayaran DateTime? @db.Date
-  id_customer Int?
-  id_pegawai Int?
-  total_bayarReservasi Int
-  customer Customer? @relation(fields: [id_customer], references: [id])
-  pegawai Pegawai? @relation(fields: [id_pegawai], references: [id])
-  TransaksiKamar TransaksiKamar[]
-  TransaksiFasilitas TransaksiFasilitas[]
-}
-
-model TransaksiKamar{
-  id Int @id @default(autoincrement())
-  id_reservasi Int
-  id_tarif Int
-  subtotal Int
-  reservasi Reservasi @relation(fields: [id_reservasi], references: [id])
-  tarif Tarif @relation(fields: [id_tarif], references: [id])
-}
-
-model TransaksiFasilitas{
-  id Int @id @default(autoincrement())
-  id_reservasi Int
-  id_fasilitas Int
-  jumlah Int
-  subtotal Int
-  reservasi Reservasi @relation(fields: [id_reservasi], references: [id])
-  fasilitas FasilitasTambahan @relation(fields: [id_fasilitas], references: [id])
+  id_jenis_kamar Int
+  jenis_kamar JenisKamar @relation(fields: [id_jenis_kamar], references: [id])
 }

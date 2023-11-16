@@ -39,7 +39,7 @@ const toISOIgnoreTimezone = (inputDate) => {
     ("0" + inputDate.getDate()).slice(-2) + "T00:00:00.000Z";
 }
 const createSeason = async (req, res) => {
-  const { nama_season, tanggal_mulai, tanggal_selesai } = req.body;
+  const { nama_season, jenis_season, tanggal_mulai, tanggal_selesai } = req.body;
 
   const { error, value } = seasonValidator.validate(req.body);
 
@@ -62,11 +62,11 @@ const createSeason = async (req, res) => {
     const season = await prisma.season.create({
       data: {
         nama_season,
+        jenis_season,
         tanggal_mulai: new Date(tanggal_mulai), // Convert to a JavaScript Date object
         tanggal_selesai: new Date(tanggal_selesai), // Convert to a JavaScript Date object
       },
     });
-
     const response = new Response.Success(false, "Data inserted successfully", season);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
@@ -76,7 +76,7 @@ const createSeason = async (req, res) => {
 };
 
 const updateSeason = async (req, res) => {
-  const { nama_season, tanggal_mulai, tanggal_selesai } = req.body;
+  const { nama_season, jenis_season, tanggal_mulai, tanggal_selesai } = req.body;
   const { error, value } = seasonValidator.validate(req.body);
 
   if (error) {
@@ -90,6 +90,7 @@ const updateSeason = async (req, res) => {
       },
       data: {
         nama_season,
+        jenis_season,
         tanggal_mulai: new Date(tanggal_mulai),
         tanggal_selesai: new Date(tanggal_selesai),
       },
@@ -118,10 +119,30 @@ const deleteSeason = async (req, res) => {
   }
 };
 
+const getSeasonByDate = async (req, res) => {
+  const { tanggal_mulai, tanggal_selesai } = req.query;
+  try {
+    const seasons = await prisma.season.findMany({
+      where: {
+        tanggal_mulai: {
+          lte: new Date(tanggal_mulai)
+        },
+        tanggal_selesai: {
+          gte: new Date(tanggal_selesai) 
+        }
+      }
+    });
+    const response = new Response.Success(false, "Data fetched successfully", seasons);
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 module.exports = {
   createSeason,
   getSeason,
   getSeasonById,
   deleteSeason,
   updateSeason,
+  getSeasonByDate,
 };

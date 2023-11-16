@@ -1,16 +1,15 @@
 const httpStatus = require('http-status')
 const Response = require('../Model/Response')
-const customerValidator = require('../Utils/customerValidator')
-const userValidator = require('../Utils/UserValidator')
+
 const bcrypt = require('../Utils/bcrypt')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
-const getCustomer = async (req, res) => {
+const getPegawai = async (req, res) => {
     try {
-        const customer = await prisma.customer.findMany()
-        const response = new Response.Success(false, 'Results found', customer)
+        const pegawai = await prisma.pegawai.findMany()
+        const response = new Response.Success(false, 'Results found', pegawai)
         res.status(httpStatus.OK).json(response)
     } catch (error) {
         const response = new Response.Error(true, error.message)
@@ -18,9 +17,9 @@ const getCustomer = async (req, res) => {
     }
 }
 
-const getCustomerById = async (req, res) => {
+const getPegawaiById = async (req, res) => {
     try {
-        const response = await prisma.customer.findUnique({
+        const response = await prisma.pegawai.findUnique({
             where: {
                 id: Number(req.params.id)
             }
@@ -36,18 +35,18 @@ const getCustomerById = async (req, res) => {
     }
 }
 
-const getCustomerByAkunID = async (req, res) => {
+const getPegawaiByAkunID = async (req, res) => {
     try {
-        const customerId = await prisma.customer.findFirst({
+        const pegawaiId = await prisma.pegawai.findFirst({
             where: {
                 id_akun: Number(req.params.id)
             }
         })
-        if (customerId) {
-            const response = new Response.Success(false, 'Results found', customerId)
+        if (pegawaiId) {
+            const response = new Response.Success(false, 'Results found', pegawaiId)
             res.status(httpStatus.OK).json(response)
         } else {
-            const response = new Response.Error(true, 'Customer not found')
+            const response = new Response.Error(true, 'Pegawai not found')
             res.status(httpStatus.NOT_FOUND).json(response)
         }
     } catch (error) {
@@ -56,7 +55,7 @@ const getCustomerByAkunID = async (req, res) => {
     }
 }
  
-const createCustomerGroup = async (req, res) => {
+const createPegawaiGroup = async (req, res) => {
     const {
         nama,
         no_identitas,
@@ -68,7 +67,7 @@ const createCustomerGroup = async (req, res) => {
 
     try {
 
-        const existingUser = await prisma.customer.findFirst({
+        const existingUser = await prisma.pegawai.findFirst({
             where: {
                 OR: [{ nama: nama }]
             }
@@ -79,7 +78,7 @@ const createCustomerGroup = async (req, res) => {
             return res.status(httpStatus.BAD_REQUEST).json(response)
         }
         
-        const customer = await prisma.customer.create({
+        const pegawai = await prisma.pegawai.create({
             data: {
                 nama,
                 no_identitas,
@@ -94,7 +93,7 @@ const createCustomerGroup = async (req, res) => {
         const response = new Response.Success(
             false,
             'Data inserted successfully',
-            customer
+            pegawai
         )
         res.status(httpStatus.OK).json(response)
     } catch (error) {
@@ -105,7 +104,7 @@ const createCustomerGroup = async (req, res) => {
 
 
 
-const createCustomer = async (req, res) => {
+const createPegawai = async (req, res) => {
     const {
         username,
         password,
@@ -141,7 +140,7 @@ const createCustomer = async (req, res) => {
             }
         })
         const lastInsertedId = user.id
-        const customer = await prisma.customer.create({
+        const pegawai = await prisma.pegawai.create({
             data: {
                 nama,
                 no_identitas,
@@ -156,7 +155,7 @@ const createCustomer = async (req, res) => {
         const response = new Response.Success(
             false,
             'Data inserted successfully',
-            customer
+            pegawai
         )
         res.status(httpStatus.OK).json(response)
     } catch (error) {
@@ -166,15 +165,15 @@ const createCustomer = async (req, res) => {
 }
 
 
-const updateCustomer = async (req, res) => {
+const updatePegawai = async (req, res) => {
     const { nama, no_identitas, no_telp, email, alamat } = req.body
-    // const { error, value } = customerValidator.validate(req.body)
+    // const { error, value } = pegawaiValidator.validate(req.body)
 
     // if (error) {
     //     return res.status(400).json({ msg: error.details[0].message })
     // }
     try {
-        const customer = await prisma.customer.update({
+        const pegawai = await prisma.pegawai.update({
             where: {
                 id: Number(req.params.id)
             },
@@ -190,7 +189,7 @@ const updateCustomer = async (req, res) => {
         const response = new Response.Success(
             false,
             'Data edited successfully',
-            customer
+            pegawai
         )
         res.status(httpStatus.OK).json(response)
     } catch (error) {
@@ -199,9 +198,9 @@ const updateCustomer = async (req, res) => {
     }
 }
 
-const deleteCustomer = async (req, res) => {
+const deletePegawai = async (req, res) => {
     try {
-        const customer = await prisma.customer.delete({
+        const pegawai = await prisma.pegawai.delete({
             where: {
                 id: Number(req.params.id)
             }
@@ -209,7 +208,7 @@ const deleteCustomer = async (req, res) => {
         const response = new Response.Success(
             false,
             'Data deleted successfully',
-            customer
+            pegawai
         )
         res.status(httpStatus.OK).json(response)
     } catch (error) {
@@ -221,11 +220,11 @@ const deleteCustomer = async (req, res) => {
 
 
 module.exports = {
-    createCustomer,
-    getCustomer,
-    getCustomerById,
-    deleteCustomer,
-    updateCustomer,
-    getCustomerByAkunID,
-    createCustomerGroup
+    createPegawai,
+    getPegawai,
+    getPegawaiById,
+    deletePegawai,
+    updatePegawai,
+    getPegawaiByAkunID,
+    createPegawaiGroup
 }
