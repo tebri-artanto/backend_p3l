@@ -6,7 +6,16 @@ const prisma = new PrismaClient();
 
 const getTransaksiKamar = async (req, res) => {
   try {
-    const transaksiKamar = await prisma.transaksiKamar.findMany();
+    const transaksiKamar = await prisma.transaksiKamar.findMany({
+      include: {
+        tarif: {
+          include: {
+            kamar: true
+          }
+        },
+        reservasi: true
+      }
+    });
     const response = new Response.Success(
       false,
       "Results found",
@@ -170,6 +179,32 @@ const getKamarByReservasiId = async (req, res) => {
   }
 };
 
+const getKamarsByReservasiId = async (req, res) => {
+  try {
+    const transksiKamar = await prisma.transaksiKamar.findMany({
+      where: {
+        id_reservasi: Number(req.params.id),
+      },
+      include: {
+        tarif: {
+          include: {
+            kamar: true,
+          },
+        },
+      },
+    });
+    const response = new Response.Success(
+      false,
+      "Data retrieved successfully",
+      transksiKamar
+    );
+    res.status(httpStatus.OK).json(response);
+  } catch (error) {
+    const response = new Response.Error(true, error.message);
+    res.status(httpStatus.BAD_REQUEST).json(response);
+  }
+};
+
 const getTransaksiKamarAndKamarBySeasonId = async (req, res) => {
   try {
     const transaksiKamar = await prisma.transaksiKamar.findMany({
@@ -213,4 +248,6 @@ const getTransaksiKamarByKamarId = async (req, res) => {
 
 module.exports = {
   getKamarByReservasiId,
+  getKamarsByReservasiId,
+  getTransaksiKamar
 };

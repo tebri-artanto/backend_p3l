@@ -56,6 +56,7 @@ model Customer{
   alamat String
   nama_institusi String
   id_akun Int
+  create_at DateTime @db.Date
   akun Akun @relation(fields: [id_akun], references: [id])
   Reservasi Reservasi[]
 }
@@ -105,6 +106,7 @@ model Reservasi{
   pegawai Pegawai? @relation(fields: [id_pegawai], references: [id])
   TransaksiKamar TransaksiKamar[]
   TransaksiFasilitas TransaksiFasilitas[]
+  InvoicePelunasan InvoicePelunasan[]
 }
 
 model TransaksiKamar{
@@ -122,6 +124,21 @@ model TransaksiFasilitas{
   id_fasilitas Int
   jumlah Int
   subtotal Int
+  tanggal_pemesanan DateTime @db.Date
   reservasi Reservasi @relation(fields: [id_reservasi], references: [id])
   fasilitas FasilitasTambahan @relation(fields: [id_fasilitas], references: [id])
+}
+
+model InvoicePelunasan{
+  id Int @id @default(autoincrement())
+  no_invoice String
+  tgl_invoice DateTime @db.Date
+  front_office String
+  total_tax Int
+  total_harga Int
+  total_jaminan Int
+  total_deposit Int
+  total_pelunasan Int
+  id_reservasi Int 
+  reservasi Reservasi @relation(fields: [id_reservasi], references: [id])
 }

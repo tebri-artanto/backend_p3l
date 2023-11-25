@@ -47,7 +47,7 @@ const getBesaranTarifByJenisKamar = async (req, res) => {
 };
 
 const makeReservasiPersonal = async (req, res) => {
-  const {
+  const { 
     jumlah_anak,
     jumlah_dewasa,
     tanggal_checkin,
@@ -165,6 +165,7 @@ const makeReservasiPersonal = async (req, res) => {
           id_reservasi: lastInsertedId,
           jumlah: jumlahFasilitas[i],
           subtotal: jumlahFasilitas[i] * hargaFasilitas[i],
+          tanggal_pemesanan: new Date(),
         },
       });
     }
@@ -293,6 +294,7 @@ const makeReservasiGroup = async (req, res) => {
         })
       );
       console.log(hargaFasilitas);
+      let todayDate = new Date();
   
       for (let i = 0; i < fasilitasIds.length; i++) {
         await prisma.transaksiFasilitas.create({
@@ -301,6 +303,7 @@ const makeReservasiGroup = async (req, res) => {
             id_reservasi: lastInsertedId,
             jumlah: jumlahFasilitas[i],
             subtotal: jumlahFasilitas[i] * hargaFasilitas[i],
+            tanggal_pemesanan: todayDate,
           },
         });
       }
@@ -319,7 +322,11 @@ const makeReservasiGroup = async (req, res) => {
 
 const getReservasi = async (req, res) => {
   try {
-    const reservasi = await prisma.reservasi.findMany();
+    const reservasi = await prisma.reservasi.findMany({
+      include: {
+        customer: true,
+      },
+    });
     const response = new Response.Success(false, "Results found", reservasi);
     res.status(httpStatus.OK).json(response);
   } catch (error) {
@@ -333,6 +340,9 @@ const getReservasiById = async (req, res) => {
     const response = await prisma.reservasi.findUnique({
       where: {
         id: Number(req.params.id),
+      },
+      include: {
+        customer: true,
       },
     });
     res.status(200).json({

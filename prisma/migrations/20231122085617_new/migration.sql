@@ -49,6 +49,7 @@ CREATE TABLE `Customer` (
     `alamat` VARCHAR(191) NOT NULL,
     `nama_institusi` VARCHAR(191) NOT NULL,
     `id_akun` INTEGER NOT NULL,
+    `create_at` DATE NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -120,6 +121,23 @@ CREATE TABLE `TransaksiFasilitas` (
     `id_fasilitas` INTEGER NOT NULL,
     `jumlah` INTEGER NOT NULL,
     `subtotal` INTEGER NOT NULL,
+    `tanggal_pemesanan` DATE NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `InvoicePelunasan` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `no_invoice` VARCHAR(191) NOT NULL,
+    `tgl_invoice` DATE NOT NULL,
+    `front_office` VARCHAR(191) NOT NULL,
+    `total_tax` INTEGER NOT NULL,
+    `total_harga` INTEGER NOT NULL,
+    `total_jaminan` INTEGER NOT NULL,
+    `total_deposit` INTEGER NOT NULL,
+    `total_pelunasan` INTEGER NOT NULL,
+    `id_reservasi` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -156,3 +174,6 @@ ALTER TABLE `TransaksiFasilitas` ADD CONSTRAINT `TransaksiFasilitas_id_reservasi
 
 -- AddForeignKey
 ALTER TABLE `TransaksiFasilitas` ADD CONSTRAINT `TransaksiFasilitas_id_fasilitas_fkey` FOREIGN KEY (`id_fasilitas`) REFERENCES `FasilitasTambahan`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `InvoicePelunasan` ADD CONSTRAINT `InvoicePelunasan_id_reservasi_fkey` FOREIGN KEY (`id_reservasi`) REFERENCES `Reservasi`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

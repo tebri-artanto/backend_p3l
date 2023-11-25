@@ -4,5 +4,5 @@ const transaksiFasilitasController = require("../Controller/transaksiFasilitasCo
 
 
 router.get("/:id_reservasi", transaksiFasilitasController.getTransaksiFasilitasByReservasiId);
-
+router.post("/", transaksiFasilitasController.tambahTransaksiFasilitas);
 module.exports = router;

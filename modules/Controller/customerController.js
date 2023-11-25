@@ -88,6 +88,7 @@ const createCustomerGroup = async (req, res) => {
                 alamat,
                 nama_institusi,
                 id_akun: 4,
+                create_at: new Date(),
             }
         })
 
@@ -149,7 +150,8 @@ const createCustomer = async (req, res) => {
                 email,
                 alamat,
                 nama_institusi: '',
-                id_akun: lastInsertedId
+                id_akun: lastInsertedId,
+                create_at: new Date(),
             }
         })
 
@@ -220,6 +222,7 @@ const deleteCustomer = async (req, res) => {
 
 
 
+
 module.exports = {
     createCustomer,
     getCustomer,
@@ -227,5 +230,5 @@ module.exports = {
     deleteCustomer,
     updateCustomer,
     getCustomerByAkunID,
-    createCustomerGroup
+    createCustomerGroup,
 }

@@ -4,5 +4,7 @@ const transaksiKamarController = require("../Controller/transaksiKamarController
 
 
 router.get("/:id", transaksiKamarController.getKamarByReservasiId);
+router.get("/all/:id", transaksiKamarController.getKamarsByReservasiId);
+router.get("/", transaksiKamarController.getTransaksiKamar);
 
 module.exports = router;
