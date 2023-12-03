@@ -175,10 +175,8 @@ const getLaporan4 = async (req, res) => {
 
     const laporanData = Object.values(customerData);
 
-    // Sort the laporanData array by jumlahReservasi in descending order
     laporanData.sort((a, b) => b.jumlahReservasi - a.jumlahReservasi);
 
-    // Return only the top 5 data
     const top5Data = laporanData.slice(0, 5);
 
     const response = new Response.Success(
@@ -195,6 +193,57 @@ const getLaporan4 = async (req, res) => {
 
 const getLaporan3 = async (req, res) => {
   try {
+    const { month } = req.params;
+
+    const transactions = await prisma.transaksiKamar.findMany({
+      include: {
+        tarif: {
+          include: {
+            kamar: true,
+          },
+        },
+        reservasi: true,
+      },
+    });
+
+    const summary = transactions.reduce((acc, transaction) => {
+      const checkinDate = new Date(transaction.reservasi.tanggal_checkin);
+      const transactionMonth = checkinDate.getMonth() + 1;
+
+      if (transactionMonth !== parseInt(month)) {
+        return acc; 
+      }
+
+      const jenisKamar = transaction.tarif.kamar.jenis_kamar;
+      const bookingIdPrefix = transaction.reservasi.booking_id.charAt(0);
+
+      acc[jenisKamar] = acc[jenisKamar] || { Grup: 0, Personal: 0 };
+
+      if (bookingIdPrefix === "G") {
+        acc[jenisKamar].Grup++;
+      } else if (bookingIdPrefix === "P") {
+        acc[jenisKamar].Personal++;
+      }
+
+      return acc;
+    }, {});
+
+    const response = Object.keys(summary).map((jenisKamar) => ({
+      Jenis_kamar: jenisKamar,
+      Grup: summary[jenisKamar].Grup,
+      Personal: summary[jenisKamar].Personal,
+      Total: summary[jenisKamar].Grup + summary[jenisKamar].Personal,
+    }));
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+};
+
+const getLaporan3all = async (req, res) => {
+  try {
     const transactions = await prisma.transaksiKamar.findMany({
       include: {
         tarif: {
@@ -210,10 +259,8 @@ const getLaporan3 = async (req, res) => {
       const jenisKamar = transaction.tarif.kamar.jenis_kamar;
       const bookingIdPrefix = transaction.reservasi.booking_id.charAt(0);
 
-      // Initialize counters if not exists
       acc[jenisKamar] = acc[jenisKamar] || { Grup: 0, Personal: 0 };
 
-      // Increment counters based on booking ID prefix
       if (bookingIdPrefix === "G") {
         acc[jenisKamar].Grup++;
       } else if (bookingIdPrefix === "P") {
@@ -238,9 +285,11 @@ const getLaporan3 = async (req, res) => {
   }
 };
 
+
 module.exports = {
   getLaporan1,
   getLaporan2,
   getLaporan4,
   getLaporan3,
+  getLaporan3all,
 };

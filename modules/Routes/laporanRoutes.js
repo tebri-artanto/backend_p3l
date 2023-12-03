@@ -4,7 +4,8 @@ const laporanController = require("../Controller/laporanController");
 
 router.get("/laporan1", laporanController.getLaporan1);
 router.get("/laporan2", laporanController.getLaporan2);
-router.get("/laporan3", laporanController.getLaporan3);
+router.get("/laporan3/:month", laporanController.getLaporan3);
+router.get("/laporan3/", laporanController.getLaporan3all);
 router.get("/laporan4", laporanController.getLaporan4);
 
 module.exports = router;
